@@ -1,0 +1,22 @@
+- hosts:
+    - web
+  tasks:
+    - name: update packages
+      apt: update_cache=yes cache_valid_time=3600
+      tags: install
+    - name: install apache2
+      apt: pkg=apache2 state=present
+      tags: install
+    - name: copy html
+      copy: src=front.html dest=/var/www/html/index.html backup=yes
+      tags: configure
+      notify: restart apache
+  handlers:
+    - name: restart apache
+      service: name=apache2 state=restarted
+
+- hosts:
+    - db
+  tasks:
+    - name: install mysql
+      apt: pkg=mysql-server state=present
